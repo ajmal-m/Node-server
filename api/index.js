@@ -1,19 +1,24 @@
 const express = require("express");
 const app = express();
+const dotenv = require("dotenv");
+const {connectToDB} = require('../config/db');``
+const postRouter = require('../routes/postRouter');
+const userRouter = require('../routes/userRouter');
 
-app.get("/", (req, res) => {
-    res.send("Welcome To Express App")
+dotenv.config();
+
+const PORT = process.env.PORT || 5000;
+
+app.use(express.json());
+
+app.use('/user', userRouter);
+app.use('/post', postRouter);
+
+
+connectToDB().then((m) => {
+    app.listen(PORT, () => {
+        console.log(`Server is running PORT ${PORT}`)
+    })
 });
-
-app.get('/home', (req, res) => {
-    res.send("<h2>Welcome Home Page</h2>")
-});
-
-app.get('/about', (req, res) => {
-    res.send("<h2>Welcome About Page</h2>")
-});
-
-
-app.listen(3000, () => console.log("Server ready on port 3000"));
 
 module.exports = app;
