@@ -89,4 +89,28 @@ router.put('/update',async (req, res) => {
     }
 });
 
+router.delete('/delete/:id',async (req, res) => {
+    try {
+        const {id} = req.params;
+        if(!id){
+            return res.status(402).json({
+                success:false,
+                message: "User is Required."
+            });
+        }
+        await User.deleteOne({
+            _id: id
+        });
+        res.status(200).json({
+            success:true,
+            message:"User deleted successfully.."
+        });
+    } catch (error) {
+        res.status(500).json({
+            success:false,
+            message:error.message
+        });
+    }
+});
+
 module.exports = router;
