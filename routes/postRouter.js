@@ -79,4 +79,23 @@ router.put('/update',async (req, res) => {
     }
 });
 
+router.delete('/delete', async (req, res) => {
+    try {
+        const { id } = req.body;
+        const client = await connectToDB();
+        await client.collection(POST_COLLECTION).deleteOne({
+            _id: id
+        });
+        res.status(200).json({
+            success:true,
+            message:"Post deleted successfully."
+        });
+    } catch (error) {
+        res.json({
+            success: false,
+            message:error.message
+        });
+    }
+})
+
 module.exports = router;
