@@ -15,7 +15,7 @@ app.use('/user', userRouter);
 app.use('/post', postRouter);
 
 
-connectToDB().then((m) => {
+connectToDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Server is running PORT ${PORT}`)
     })

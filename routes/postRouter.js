@@ -2,14 +2,14 @@ const express = require("express");
 const router = express.Router();
 const {connectToDB} = require('../config/db');
 const dotenv = require('dotenv');
+const Post = require("../model/Post");
 
 dotenv.config();
 
 const POST_COLLECTION = process.env.POST_COLLECTION;
 
 router.get('/posts', async (req, res) => {
-    const client = await connectToDB();
-    const posts = await client.collection(POST_COLLECTION).find().toArray();
+    const posts = await Post.find({});
     res.json({
         success: true,
         posts
@@ -28,8 +28,7 @@ router.post('/create', async (req, res) => {
         });
     }
 
-    const client = await connectToDB();
-    await client.collection(POST_COLLECTION).insertOne({
+    await Post.create({
         title: title,
         description: description
     });
@@ -50,11 +49,11 @@ router.post('/create', async (req, res) => {
 router.put('/update',async (req, res) => {
     try {
         const { id, title, description } = req.body;
-        const client = await connectToDB();
-        await client.collection(POST_COLLECTION).updateOne(
+
+        await Post.updateOne(
             {
                 _id: id
-            }, 
+            },
             {
                 $set:{
                     title,
@@ -82,8 +81,7 @@ router.put('/update',async (req, res) => {
 router.delete('/delete', async (req, res) => {
     try {
         const { id } = req.body;
-        const client = await connectToDB();
-        await client.collection(POST_COLLECTION).deleteOne({
+        await Post.deleteOne({
             _id: id
         });
         res.status(200).json({
