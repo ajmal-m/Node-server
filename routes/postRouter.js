@@ -44,6 +44,34 @@ router.post('/create', async (req, res) => {
    }
 });
 
+// Get posts by auhtors
+router.get('/user/:id',async (req, res) => {
+    try {
+        const {id} = req.params;
+        if(!id){
+            return res.status(404).json({
+                success:false,
+                message:"User is Required"
+            });
+        }
+        const posts = await Post.find(
+            {
+                author: id
+            }
+        ).populate("author");
+        
+        res.status(200).json({
+            success:true,
+            posts: posts,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success:false,
+            message: error.message
+        });
+    }
+} );
+
 
 router.put('/update',async (req, res) => {
     try {
