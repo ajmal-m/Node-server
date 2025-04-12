@@ -1,15 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const {connectToDB} = require('../config/db');
 const dotenv = require('dotenv');
 const Post = require("../model/Post");
 
 dotenv.config();
 
-const POST_COLLECTION = process.env.POST_COLLECTION;
 
 router.get('/posts', async (req, res) => {
-    const posts = await Post.find({});
+    const posts = await Post.find({}).populate("author");
     res.json({
         success: true,
         posts
@@ -19,7 +17,7 @@ router.get('/posts', async (req, res) => {
 
 router.post('/create', async (req, res) => {
    try {
-    const { title, description} = req.body;
+    const { title, description, authorId} = req.body;
 
     if(!title || !description){
         return res.status(400).json({
@@ -30,7 +28,8 @@ router.post('/create', async (req, res) => {
 
     await Post.create({
         title: title,
-        description: description
+        description: description,
+        author: authorId
     });
 
     res.status(200).json({
