@@ -7,7 +7,11 @@ app.get("/", (req, res) => {
 
 app.get('/home', (req, res) => {
     res.send("<h2>Welcome Home Page</h2>")
-})
+});
+
+app.get('/about', (req, res) => {
+    res.send("<h2>Welcome About Page</h2>")
+});
 
 
 app.listen(3000, () => console.log("Server ready on port 3000"));
