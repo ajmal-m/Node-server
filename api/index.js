@@ -5,6 +5,7 @@ const {connectToDB} = require('../config/db');``
 const postRouter = require('../routes/postRouter');
 const userRouter = require('../routes/userRouter');
 const authRouter = require('../routes/authRouter');
+const {verifyToken} = require('../middleware/auth');
 
 dotenv.config();
 
@@ -12,8 +13,8 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
-app.use('/user', userRouter);
-app.use('/post', postRouter);
+app.use('/user', verifyToken,  userRouter);
+app.use('/post', verifyToken,  postRouter);
 app.use('/auth', authRouter);
 
 
