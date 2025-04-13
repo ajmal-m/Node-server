@@ -7,11 +7,17 @@ const verifyToken =async (req, res, next) => {
     try {
         const token = req.headers['access-token'];
         if(!token){
-            return next(new ApiError(403, "No token Provided"));
+            return res.status(403).json({
+                success:false,
+                message:"Token is required"
+            });
         }
         const verifiedUser =  jwt.verify(token, process.env.JWT_SECRET_KEY);
         if(!verifiedUser){
-            return next(new ApiError(401, 'Unauthorized user'));
+            return res.status(401).json({
+                success:false,
+                message:"Unauthorized user"
+            });
         }
         req.user = verifiedUser?.user;
         next()
