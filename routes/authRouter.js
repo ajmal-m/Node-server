@@ -42,7 +42,7 @@ router.post('/sign-in', async (req, res) => {
             });
         }
 
-        const token = jwt.sign({ id: userExist._id, name: userExist.name}, process.env.JWT_SECRET_KEY , { expiresIn: '24h'}  );
+        const token = jwt.sign({ id: userExist._id, name: userExist.name, user: userExist}, process.env.JWT_SECRET_KEY , { expiresIn: '24h'}  );
 
         res.status(200).json({
             success: true,
