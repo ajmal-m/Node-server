@@ -5,7 +5,7 @@ dotenv.config();
 
 const verifyToken =async (req, res, next) => {
     try {
-        const token = req.headers['Access-token'];
+        const token = req.headers['access-token'];
         if(!token){
             return res.status(403).json({
                 success:false,
