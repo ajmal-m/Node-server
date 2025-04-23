@@ -61,10 +61,11 @@ router.post('/sign-in', async (req, res) => {
 
 router.post('/sign-up', async (req, res) => {
     try {
+        console.log(req.body)
         let {email, password, name} = req.body;
 
         if(!email || !password || !name) {
-            return res.status(404).json({
+            return res.status(200).json({
                 success:false,
                 message:"All fields are required"
             });
@@ -75,7 +76,7 @@ router.post('/sign-up', async (req, res) => {
         });
 
         if(userExist){
-            return res.status(402).json({
+            return res.status(200).json({
                 success:false,
                 message:"Email already used"
             })
@@ -96,7 +97,11 @@ router.post('/sign-up', async (req, res) => {
         res.status(200).json({
             success:true,
             message:'User sign up successfully.',
-            token
+            token,
+            user:{
+                name,
+                email
+            }
         });
         
     } catch (error) {

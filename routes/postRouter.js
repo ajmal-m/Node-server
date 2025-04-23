@@ -17,10 +17,11 @@ router.get('/posts', async (req, res) => {
 
 router.post('/create', async (req, res) => {
    try {
+    console.log(req.body)
     const { title, description, authorId} = req.body;
 
     if(!title || !description){
-        return res.status(400).json({
+        return res.status(200).json({
             success: false,
             message:"Please Provide complete Datas"
         });
@@ -77,6 +78,20 @@ router.put('/update',async (req, res) => {
     try {
         const { id, title, description } = req.body;
 
+        if(!id) {
+            return res.status(200).json({
+                success:false,
+                message:"Post is not found."
+            });
+        }
+
+        if(!title || !description){
+            return res.status(200).json({
+                success:false,
+                message:"All Fields are required."
+            });
+        }
+
         await Post.updateOne(
             {
                 _id: id
@@ -121,6 +136,33 @@ router.delete('/delete', async (req, res) => {
             message:error.message
         });
     }
-})
+});
+
+
+// get Post by id
+router.get('/get-post/:id', async (req, res) => {
+    const {id} = req.params;
+    if(!id){
+        return res.status(203).json({
+            success:false,
+            message:"Post Id is Required."
+        });
+    }
+
+    const post = await Post.findById(id);
+
+    if(!post){
+        return res.status(404).json({
+            success:false,
+            message:'Post is not found.'
+        });
+    }
+
+    res.status(200).json({
+        success:true,
+        message:"post fetched successfully.",
+        post
+    });
+});
 
 module.exports = router;

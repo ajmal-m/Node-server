@@ -22,6 +22,7 @@ const verifyToken =async (req, res, next) => {
         req.user = verifiedUser?.user;
         next()
     } catch (error) {
+        console.log(error)
         return next(new ApiError(500, error.message) );
     }
 };
