@@ -13,7 +13,7 @@ router.post('/sign-in', async (req, res) => {
         const { email, password } = req.body;
         
         if(!email || !password) {
-            return res.status(404).json({
+            return res.status(200).json({
                 success:false,
                 message:"All fields are required"
             });
@@ -25,7 +25,7 @@ router.post('/sign-in', async (req, res) => {
         });
 
         if(!userExist){
-            return res.status(404).json({
+            return res.status(200).json({
                 success:false,
                 message:"User doesn't exist"
             });
@@ -36,7 +36,7 @@ router.post('/sign-in', async (req, res) => {
         console.log(passwordCorrect)
 
         if(!passwordCorrect){
-            return res.status(402).json({
+            return res.status(200).json({
                 success:false,
                 message:"Password is incorrect"
             });
@@ -47,7 +47,11 @@ router.post('/sign-in', async (req, res) => {
         res.status(200).json({
             success: true,
             token,
-            message:"User signed successfully."
+            message:"User signed successfully.",
+            user:{
+                name:userExist?.name,
+                email: userExist?.email
+            }
         })
 
     } catch (error) {
@@ -91,7 +95,7 @@ router.post('/sign-up', async (req, res) => {
         });
 
 
-        const token =  jwt.sign({ id: createdUser._id, name: createdUser.name}, process.env.JWT_SECRET_KEY, { expiresIn: '24h'});
+        const token =  jwt.sign({ id: createdUser._id, name: createdUser.name, user: createdUser}, process.env.JWT_SECRET_KEY, { expiresIn: '24h'});
 
 
         res.status(200).json({
@@ -113,9 +117,12 @@ router.post('/sign-up', async (req, res) => {
 });
 
 router.get('/verify-token', (req, res) => {
-    const token = req.headers['access-token'];
+    console.log("Token")
+    const token = req.headers.authorization.split(" ")[1];
+
+    console.log("token" , token)
     if(!token){
-        return res.status(403).json({
+        return res.status(200).json({
             success:false,
             message:"Token is required"
         });
@@ -124,7 +131,7 @@ router.get('/verify-token', (req, res) => {
     const verifiedUser = jwt.verify( token , process.env.JWT_SECRET_KEY);
 
     if(!verifiedUser){
-        return res.status(401).json({
+        return res.status(200).json({
             success:false,
             message:"Unauthorized user"
         });

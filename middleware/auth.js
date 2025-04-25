@@ -5,7 +5,7 @@ dotenv.config();
 
 const verifyToken =async (req, res, next) => {
     try {
-        const token = req.headers['access-token'];
+        const token = req.headers.authorization.split(" ")[1];
         if(!token){
             return res.status(403).json({
                 success:false,
@@ -23,7 +23,10 @@ const verifyToken =async (req, res, next) => {
         next()
     } catch (error) {
         console.log(error)
-        return next(new ApiError(500, error.message) );
+        return res.status(500).json({
+            success:false,
+            message:error.message,
+        })
     }
 };
 
