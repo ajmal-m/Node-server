@@ -9,7 +9,9 @@ const PostSchema = new Schema({
     author:{
         type: Schema.Types.ObjectId,
         ref:'User'
-    }
+    },
+    htmlContent:String,
+    htmlObject: Object
 });
 
 module.exports = mongoose.model('Post', PostSchema);

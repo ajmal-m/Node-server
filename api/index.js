@@ -10,7 +10,7 @@ const authRouter = require('../routes/authRouter');
 const {verifyToken} = require('../middleware/auth');
 
 
-dotenv.config();
+dotenv.config(); 
 
 const PORT = process.env.PORT || 5000;
 
