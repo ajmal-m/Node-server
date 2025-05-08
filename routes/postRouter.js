@@ -18,19 +18,30 @@ router.get('/posts', async (req, res) => {
 router.post('/create', async (req, res) => {
    try {
     console.log(req.body)
-    const { title, description, authorId} = req.body;
+    const { description, authorId, htmlContent,htmlObject } = req.body;
 
-    if(!title || !description){
+    if(!htmlContent || !htmlObject){
         return res.status(200).json({
             success: false,
             message:"Please Provide complete Datas"
         });
     }
 
+    // take Title
+    let title='';
+    try {
+        title = htmlObject?.content?.find((x) => (x.type ==="heading"))?.content[0]?.text;
+    } catch (error) {
+        console.log(error);
+        
+    }
+
     await Post.create({
         title: title,
         description: description,
-        author: authorId
+        author: authorId,
+        htmlObject,
+        htmlContent
     });
 
     res.status(200).json({
