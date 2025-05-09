@@ -23,7 +23,12 @@ app.use('/auth', authRouter);
 
 
 app.get("/", (req, res) => {
-    res.send("<h1>Hello World Welcome</h1>")
+    res.status(200).json({
+        success:true,
+        data:{
+            test:true,
+        }
+    });
 })
 
 
