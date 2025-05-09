@@ -22,6 +22,11 @@ app.use('/post', verifyToken,  postRouter);
 app.use('/auth', authRouter);
 
 
+app.get("/", (req, res) => {
+    res.send("<h1>Hello World Welcome</h1>")
+})
+
+
 connectToDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Server is running PORT ${PORT}`)
