@@ -50,7 +50,8 @@ router.post('/sign-in', async (req, res) => {
             message:"User signed successfully.",
             user:{
                 name:userExist?.name,
-                email: userExist?.email
+                email: userExist?.email,
+                id: userExist._id
             }
         })
 
@@ -104,7 +105,8 @@ router.post('/sign-up', async (req, res) => {
             token,
             user:{
                 name,
-                email
+                email,
+                id: createdUser._id
             }
         });
         
@@ -140,7 +142,10 @@ router.get('/verify-token', (req, res) => {
     res.status(200).json({
         success:true,
         message:"Authorization completed",
-        user: verifiedUser?.user
+        user:{
+            ...verifiedUser?.user,
+            id:  verifiedUser?.user?._id
+        }
     })
 });
 
