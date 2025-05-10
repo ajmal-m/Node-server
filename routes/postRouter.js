@@ -87,7 +87,7 @@ router.get('/user/:id',async (req, res) => {
 
 router.put('/update',async (req, res) => {
     try {
-        const { id, title, description } = req.body;
+        const { id, htmlContent, htmlObject } = req.body;
 
         if(!id) {
             return res.status(200).json({
@@ -96,11 +96,19 @@ router.put('/update',async (req, res) => {
             });
         }
 
-        if(!title || !description){
+        if(!htmlContent || !htmlObject){
             return res.status(200).json({
                 success:false,
                 message:"All Fields are required."
             });
+        }
+
+        let title='';
+        try {
+            title = htmlObject?.content?.find((x) => (x.type ==="heading"))?.content[0]?.text;
+        } catch (error) {
+            console.log(error);
+            
         }
 
         await Post.updateOne(
@@ -109,8 +117,9 @@ router.put('/update',async (req, res) => {
             },
             {
                 $set:{
-                    title,
-                    description
+                    htmlContent,
+                    htmlObject,
+                    title
                 }
             },
             {
