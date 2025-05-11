@@ -11,7 +11,11 @@ const PostSchema = new Schema({
         ref:'User'
     },
     htmlContent:String,
-    htmlObject: Object
+    htmlObject: Object,
+    thumbnail:{
+        src: { type: String },
+        alt: { type: String }
+    }
 });
 
 module.exports = mongoose.model('Post', PostSchema);
