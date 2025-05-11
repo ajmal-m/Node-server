@@ -7,6 +7,7 @@ const {connectToDB} = require('../config/db');``
 const postRouter = require('../routes/postRouter');
 const userRouter = require('../routes/userRouter');
 const authRouter = require('../routes/authRouter');
+const uploadRouter = require("../routes/uploadRouter");
 const {verifyToken} = require('../middleware/auth');
 
 
@@ -19,6 +20,7 @@ app.use(cors())
 
 app.use('/user', verifyToken,  userRouter);
 app.use('/post', verifyToken,  postRouter);
+app.use('/', verifyToken, uploadRouter);
 app.use('/auth', authRouter);
 
 
