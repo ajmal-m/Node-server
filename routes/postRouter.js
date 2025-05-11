@@ -7,10 +7,23 @@ dotenv.config();
 
 
 router.get('/posts', async (req, res) => {
-    const posts = await Post.find({}).populate("author");
+    let {page, limit} = req.query;
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+
+    const totalCount = await Post.countDocuments();
+    const totalPages = Math.ceil(totalCount/limit);
+
+    const skip = (page-1)*limit;
+
+    const posts = await Post.find({}).skip(skip).limit(limit).populate("author");
+    const nextPage = totalPages > page;
+
     res.json({
         success: true,
-        posts
+        posts,
+        totalPages,
+        nextPage
     });
 });
 
