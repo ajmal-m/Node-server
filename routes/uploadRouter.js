@@ -49,7 +49,7 @@ router.post('/asset-upload', upload.single("image"), async (req, res) => {
         Key: randomImageName
     }
     const getCommand = new GetObjectCommand(getObjectParams);
-    const url = await getSignedUrl(s3, getCommand, { expiresIn: 3600 });
+    const url = await getSignedUrl(s3, getCommand, { expiresIn:  7 * 24 * 60 * 60 });
 
 
     res.status(200).json({

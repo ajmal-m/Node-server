@@ -36,13 +36,30 @@ router.post('/create', async (req, res) => {
         
     }
 
-    await Post.create({
+    let thumbnail = null;
+    let altname = '';
+    try {
+        // extracting thumbnail
+        const image = htmlObject?.content?.find((x) => (x.type ==="image"));
+        thumbnail = image?.attrs?.src;
+        altname = image?.attrs?.title;
+    } catch (error) {
+        console.log(error);
+    }
+
+    let createObject = {
         title: title,
         description: description,
         author: authorId,
         htmlObject,
         htmlContent
-    });
+    };
+
+    if(thumbnail){
+        createObject = {...createObject, thumbnail: { src: thumbnail, alt: altname}}
+    }
+
+    await Post.create(createObject);
 
     res.status(200).json({
         success:true,
