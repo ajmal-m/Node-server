@@ -15,6 +15,20 @@ const PostSchema = new Schema({
     thumbnail:{
         src: { type: String },
         alt: { type: String }
+    },
+    likeCount:{
+        type: Number,
+        default: 0,
+    },
+    likedUsers:[
+        {
+            type: Schema.Types.ObjectId,
+            ref:"User"
+        }
+    ],
+    hasLiked:{
+        type: Boolean,
+        default: false
     }
 });
 

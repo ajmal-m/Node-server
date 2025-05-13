@@ -2,12 +2,14 @@ const express = require("express");
 const router = express.Router();
 const dotenv = require('dotenv');
 const Post = require("../model/Post");
+const { connectToDB } = require("../config/db");
 
 dotenv.config();
 
 
 router.get('/posts', async (req, res) => {
     let {page, limit} = req.query;
+    const userId = req.user?._id;
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 10;
 
@@ -16,7 +18,14 @@ router.get('/posts', async (req, res) => {
 
     const skip = (page-1)*limit;
 
-    const posts = await Post.find({}).skip(skip).limit(limit).populate("author");
+    let posts = await Post.find({}).skip(skip).limit(limit).populate("author");
+    posts = posts.map((post) => {
+        const plainObject = post.toObject();
+        return {
+            ...plainObject,
+            hasLiked: post.likedUsers.includes(userId)
+        };
+    });
     const nextPage = totalPages > page;
 
     res.json({
@@ -214,5 +223,77 @@ router.get('/get-post/:id', async (req, res) => {
         post
     });
 });
+
+router.put("/update-like", async (req, res) => {
+    const {postId, userId, likeStatus} = req.body;
+    if(!postId){
+        return res.status(200).json({
+            success:false,
+            message:"PostId is Required."
+        });
+    };
+    const getPost = await Post.findById(postId).populate("author");
+    if(!getPost){
+        return res.status(200).json({
+            success:false,
+            message:"Post is not found."
+        });
+    };
+    
+    if(likeStatus === 'like'){
+        // Liking Post
+        if(getPost?.likedUsers.includes(userId)){
+            return res.status(200).json({
+                success:false,
+                message:"User already liked this post"
+            });
+        }
+        await Post.updateOne(
+            {
+                _id: postId
+            },
+            {
+                $inc:{
+                    likeCount: 1
+                },
+                $push:{
+                    likedUsers:userId
+                }
+            }
+        );
+
+        res.status(200).json({
+            success:true,
+            message:'Successfully Liked this post.'
+        });
+
+    }else{
+        if(! getPost?.likedUsers.includes(userId)){
+            return res.status(200).json({
+                success:false,
+                message:"User not liked this post"
+            });
+        }
+        // UnLinking Post
+        await Post.updateOne(
+            {
+                _id: postId
+            },
+            {
+                $inc:{
+                    likeCount: -1
+                },
+                $pull:{
+                    likedUsers:userId
+                }
+            }
+        );
+
+        res.status(200).json({
+            success:true,
+            message:"Successfully unLiked this post."
+        });
+    }
+})
 
 module.exports = router;
