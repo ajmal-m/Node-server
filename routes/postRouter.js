@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const dotenv = require('dotenv');
 const Post = require("../model/Post");
-const { connectToDB } = require("../config/db");
 
 dotenv.config();
 
@@ -208,7 +207,9 @@ router.get('/get-post/:id', async (req, res) => {
         });
     }
 
-    const post = await Post.findById(id);
+    const post = await Post.findById(id).populate("author");
+
+    console.log(post)
 
     if(!post){
         return res.status(404).json({
