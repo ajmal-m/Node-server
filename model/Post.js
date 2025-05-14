@@ -29,7 +29,13 @@ const PostSchema = new Schema({
     hasLiked:{
         type: Boolean,
         default: false
-    }
+    },
+    comments:[
+        {
+            type: Schema.Types.ObjectId,
+            ref:"Comment"
+        }
+    ]
 });
 
 module.exports = mongoose.model('Post', PostSchema);

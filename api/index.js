@@ -8,6 +8,7 @@ const postRouter = require('../routes/postRouter');
 const userRouter = require('../routes/userRouter');
 const authRouter = require('../routes/authRouter');
 const uploadRouter = require("../routes/uploadRouter");
+const commentRouter = require("../routes/commentRouter");
 const {verifyToken} = require('../middleware/auth');
 
 
@@ -21,6 +22,7 @@ app.use(cors())
 app.use('/auth', authRouter);
 app.use('/user', verifyToken,  userRouter);
 app.use('/post', verifyToken,  postRouter);
+app.use('/post/comment', commentRouter);
 app.use('/', verifyToken, uploadRouter);
 
 
