@@ -80,11 +80,14 @@ router.post('/create', async (req, res) => {
         createObject = {...createObject, thumbnail: { src: thumbnail, alt: altname}}
     }
 
-    await Post.create(createObject);
+    const newPost = await Post.create(createObject);
+
+    console.log("New post - ", newPost)
 
     res.status(200).json({
         success:true,
-        message:'Post Created successfully.'
+        message:'Post Created successfully.',
+        post: newPost
     });
    } catch (error) {
     res.status(500).json({

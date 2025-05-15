@@ -5,7 +5,6 @@ const { Schema} = mongoose;
 const PostSchema = new Schema({
     title: String,
     description: String,
-    creadtedAt: { type: Date, default: Date.now},
     author:{
         type: Schema.Types.ObjectId,
         ref:'User'
@@ -36,6 +35,8 @@ const PostSchema = new Schema({
             ref:"Comment"
         }
     ]
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Post', PostSchema);
