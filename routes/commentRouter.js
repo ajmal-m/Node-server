@@ -72,18 +72,40 @@ router.post('/create',async (req, res) => {
 
 router.get("/:postId",async (req, res) => {
     try {
-        const {postId} = req.params;
+        let {postId} = req.params;
+        let { page, limit} = req.query;
+
+        if(!page){
+            return res.status(200).json({
+                success:false,
+                message:"Page is required."
+            })
+        }
+        if(!limit){
+             return res.status(200).json({
+                success:false,
+                message:"Limit is required."
+            })
+        }
         if(!postId){
             return res.status(200).json({
                 success:false,
                 message:"Post is required."
             });
         }
-        const comments = await Comment.find({ postId: postId });
+        page = parseInt(page);
+        limit = parseInt(limit);
+        const skipCount = (page-1)*limit;
+        const totalCount = await Comment.countDocuments({ postId: postId});
+        const totalPages = Math.ceil(totalCount/limit);
+        const comments = await Comment.find({ postId: postId }).skip(skipCount).limit(limit);
+        const nextPage = totalPages > page;
         res.status(200).json({
             success:true,
             message:'Comments reterived successfully.',
-            comments
+            comments,
+            totalPages,
+            nextPage
         });
     } catch (error) {
         res.status(200).json({
