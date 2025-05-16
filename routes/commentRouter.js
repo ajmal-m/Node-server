@@ -4,6 +4,7 @@ const router = express.Router();
 
 const Comment = require("../model/Comment");
 const Post = require("../model/Post");
+const mongoose = require("mongoose");
 
 dotenv.config();
 
@@ -111,6 +112,61 @@ router.get("/:postId",async (req, res) => {
         res.status(200).json({
             success:false,
             message:error?.message
+        });
+    }
+})
+
+router.delete('/:commentId', async  (req, res) => {
+    const { commentId } = req.params;
+    const {postId} = req.query;
+
+    if(!postId){
+        return res.status(200).json({
+            success:false,
+            message:"Post is required."
+        })
+    }
+    if(!commentId){
+        return res.status(200).json({
+            success:false,
+            message:"CommentId is required"
+        });
+    }
+
+    try {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+
+        // Delete comment
+        await Comment.findByIdAndDelete(commentId).session(session);
+
+        // Delete commentId  from Post
+        await Post.updateOne(
+            {
+                _id:postId
+            },
+            {
+                $pull:{
+                    comments: commentId
+                }
+            }
+        ).session(session);
+
+        await session.commitTransaction();
+
+        session.endSession();
+
+        res.status(200).json({
+            success:true,
+            message:"comment Deleted successfully."
+        });
+    } catch (error) {
+        session.abortTransaction();
+        session.endSession();
+
+        res.status(200).json({
+            success:false,
+            message:error.message
         });
     }
 })
