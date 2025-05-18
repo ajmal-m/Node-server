@@ -9,6 +9,7 @@ const userRouter = require('../routes/userRouter');
 const authRouter = require('../routes/authRouter');
 const uploadRouter = require("../routes/uploadRouter");
 const commentRouter = require("../routes/commentRouter");
+const likeCommentRouter = require("../routes/commentLikeRouter");
 const {verifyToken} = require('../middleware/auth');
 
 
@@ -23,13 +24,14 @@ app.use('/auth', authRouter);
 app.use('/user', verifyToken,  userRouter);
 app.use('/post', verifyToken,  postRouter);
 app.use('/post/comment', commentRouter);
+app.use('/post/comment/like', likeCommentRouter);
 app.use('/', verifyToken, uploadRouter);
 
 
 app.get("/", (req, res) => {
     res.status(200).json({
         success:true,
-        data:{
+        data:{ 
             test:true,
         }
     });

@@ -6,10 +6,6 @@ const CommentSchema = new Schema({
     text:{
         type:String
     },
-    createdAt:{
-        type:Date,
-        default: Date.now,
-    },
     userId:{
         type: Schema.Types.ObjectId,
         ref:"User"
@@ -18,9 +14,19 @@ const CommentSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"Post"
     },
-    updatedAt:{
-        type:Date,
-        default: Date.now
+    likes:[
+        {
+            type:Schema.Types.ObjectId,
+            ref:"CommentLike"
+        }
+    ],
+    hasLiked:{
+        type:Boolean,
+        default:false
+    },
+    likeCount:{
+        type:Number,
+        default:0
     }
 },{
     timestamps:true

@@ -5,6 +5,7 @@ const router = express.Router();
 const Comment = require("../model/Comment");
 const Post = require("../model/Post");
 const mongoose = require("mongoose");
+const LIkeComment = require("../model/LIkeComment");
 
 dotenv.config();
 
@@ -75,6 +76,14 @@ router.get("/:postId",async (req, res) => {
     try {
         let {postId} = req.params;
         let { page, limit} = req.query;
+        const userId = req.user._id;
+
+        if(!userId){
+            return res.status(200).json({
+                success:false,
+                message:"User is not authenticated"
+            })
+        }
 
         if(!page){
             return res.status(200).json({
@@ -99,7 +108,18 @@ router.get("/:postId",async (req, res) => {
         const skipCount = (page-1)*limit;
         const totalCount = await Comment.countDocuments({ postId: postId});
         const totalPages = Math.ceil(totalCount/limit);
-        const comments = await Comment.find({ postId: postId }).skip(skipCount).limit(limit);
+        const comments = await Comment.find({ postId: postId }).skip(skipCount).limit(limit).populate("likes");
+        for(let comment of comments){
+            let userLiked = false;
+            const likes = comment.likes ?? [];
+            for(let like of likes){
+                if(like.user.toString() === userId){
+                    userLiked = true;
+                    break;
+                }
+            }
+            comment.hasLiked = userLiked;
+        }
         const nextPage = totalPages > page;
         res.status(200).json({
             success:true,
@@ -170,6 +190,5 @@ router.delete('/:commentId', async  (req, res) => {
         });
     }
 })
-
 
 module.exports = router;
