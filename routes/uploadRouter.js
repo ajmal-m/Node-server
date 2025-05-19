@@ -6,6 +6,7 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const {getSignedUrl} = require("@aws-sdk/s3-request-presigner");
+const sharp = require("sharp");
 
 const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 
@@ -28,12 +29,24 @@ const s3 = new S3Client({
 
 router.post('/asset-upload', upload.single("image"), async (req, res) => {
     console.log(req.file)
+    let {width, height} = req.query;
+    width = parseInt(width);
+    height = parseInt(height);
 
     const randomImageName = crypto.randomBytes(16).toString('hex');
+    const proccessedImage = await sharp(req.file.buffer).resize(
+        width ?? 500, height ?? 500
+    ).toFormat(
+        'jpeg',
+        {
+            quality: 80,
+            mozjpeg: true
+        }
+    ).toBuffer();
     const params = {
         Bucket: bucket_name,
         Key: randomImageName,
-        Body: req.file.buffer,
+        Body: proccessedImage,
         ContentType: req.file.mimetype
     };
 
