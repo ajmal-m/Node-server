@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const User = require('../model/User');
 const bcrypt = require("bcrypt");
-const {verifyToken} = require("../middleware/auth")
 
 router.get('/all' , async (req, res) => {
     try {
@@ -51,29 +50,24 @@ router.post('/create', async (req, res) => {
 
 router.put('/update',async (req, res) => {
     try {
-        let { id, name, password} = req.body;
-        if(!id){
-            return res.status(404).json({
-                success:false,
-                message:"User is Required"
-            });
-        }
+        let {  name, password , avatar , id} = req.body;
         if(!name || !password) {
             return res.status(404).json({
                 success: false,
                 message:'Everey data is required'
             });
         }
-        password = bcrypt.hash(password, 10);
-        await User.updateOne(
+        password = await bcrypt.hash(password, 10);
+        let updateObject = { name, password};
+        if(avatar){
+            updateObject = { ...updateObject, avatar};
+        }
+        let updatedUser = await User.updateOne(
             {
                 _id:id
             },
             {
-                $set:{
-                    name,
-                    password
-                }
+                $set:updateObject
             },
             {
                 upsert:true
@@ -81,7 +75,8 @@ router.put('/update',async (req, res) => {
         );
         res.status(200).json({
             success:true,
-            message:"User updated successfully."
+            message:"User updated successfully.",
+            user:updatedUser
         });
     } catch (error) {
         res.status(500).json({

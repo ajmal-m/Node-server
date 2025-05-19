@@ -5,16 +5,18 @@ const UserSchema = new  Schema({
     name: String,
     email: String,
     password: String,
-    createdAt: {
-        type:Date,
-        default: Date.now
-    },
     posts: [
         {
             type: Schema.Types.ObjectId,
             ref:'Post'
         }
-    ]
+    ],
+    avatar:{
+        type:String,
+        default:null
+    }
+},{
+    timestamps:true
 });
 
 module.exports = mongoose.model('User', UserSchema);

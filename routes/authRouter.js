@@ -24,6 +24,8 @@ router.post('/sign-in', async (req, res) => {
             email: email
         });
 
+        console.log(userExist)
+
         if(!userExist){
             return res.status(200).json({
                 success:false,
@@ -42,7 +44,7 @@ router.post('/sign-in', async (req, res) => {
             });
         }
 
-        const token = jwt.sign({ id: userExist._id, name: userExist.name, user: userExist}, process.env.JWT_SECRET_KEY , { expiresIn: '24h'}  );
+        const token = jwt.sign({ id: userExist._id, name: userExist.name, avatar: userExist.avatar, user: userExist}, process.env.JWT_SECRET_KEY , { expiresIn: '24h'}  );
 
         res.status(200).json({
             success: true,
@@ -51,7 +53,8 @@ router.post('/sign-in', async (req, res) => {
             user:{
                 name:userExist?.name,
                 email: userExist?.email,
-                id: userExist._id
+                id: userExist._id,
+                avatar:userExist.avatar
             }
         })
 
