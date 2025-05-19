@@ -27,6 +27,14 @@ const CommentSchema = new Schema({
     likeCount:{
         type:Number,
         default:0
+    },
+    user:{
+        type: Schema.Types.ObjectId,
+        ref:"User"
+    },
+    post:{
+        type:Schema.Types.ObjectId,
+        ref:"Post"
     }
 },{
     timestamps:true

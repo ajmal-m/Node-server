@@ -11,6 +11,7 @@ dotenv.config();
 
 
 router.post('/create',async (req, res) => {
+    let session = await mongoose.startSession();
     try {
         const userId = req.user?._id;
         const {text, postId} = req.body;
@@ -33,11 +34,15 @@ router.post('/create',async (req, res) => {
             })
         }
 
-        const response = await Comment.create({
+        session.startTransaction();
+
+        const response = await Comment.create([{
             text,
             userId,
             postId,
-        });
+            user: userId,
+            post: postId
+        }], { session: session});
         
         if(!response){
             res.status(200).json({
@@ -46,18 +51,20 @@ router.post('/create',async (req, res) => {
             });
         }
 
-        console.log(response)
-
         await Post.updateOne(
             {
                 _id: postId
             },
             {
                 $push:{
-                    comments: response.toObject()._id
+                    comments: response[0].toObject()._id
                 }
             }
-        );
+        ).session(session);
+
+
+        await session.commitTransaction();
+        session.endSession();
 
         res.status(200).json({
             success:true,
@@ -65,6 +72,8 @@ router.post('/create',async (req, res) => {
             response
         });
     } catch (error) {
+        session.abortTransaction();
+        session.endSession();
         return res.status(200).json({
             success:false,
             message: error?.message
@@ -108,7 +117,7 @@ router.get("/:postId",async (req, res) => {
         const skipCount = (page-1)*limit;
         const totalCount = await Comment.countDocuments({ postId: postId});
         const totalPages = Math.ceil(totalCount/limit);
-        const comments = await Comment.find({ postId: postId }).skip(skipCount).limit(limit).populate("likes");
+        const comments = await Comment.find({ postId: postId }).skip(skipCount).limit(limit).populate("likes").populate("user");
         for(let comment of comments){
             let userLiked = false;
             const likes = comment.likes ?? [];
